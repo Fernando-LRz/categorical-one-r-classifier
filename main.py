@@ -24,11 +24,20 @@ def main():
         frecuency_table = pandas.crosstab(df[attribute], df[class_name]) # rows, columns
         frequency_tables[attribute] = frecuency_table
 
-    # Imprimir las tablas de frecuencia por atributo
-    for attribute, tabla in frequency_tables.items():
-        print(f"Tabla de frecuencia para el atributo '{attribute}':")
-        print(tabla)
-        print()
+    # Crear un DataFrame para almacenar las reglas
+    rules = pandas.DataFrame(columns=['Attribute', 'Value', 'Class'])
+
+    # Iterar sobre las tablas de frecuencia 
+    for attribute, frecuency_table in frequency_tables.items():
+        # Obtener los valores posibles de cada atributo
+        attribute_values = frecuency_table.index
+
+        for value in attribute_values:
+            # Encuentra la clase más frecuente para el valor del atributo
+            most_frequent_class = df[df[attribute] == value][class_name].mode().iloc[0]
+            rules = rules._append({'Attribute': attribute, 'Value': value, 'Class': most_frequent_class}, ignore_index=True)
+    
+    print(rules)
 
 # Verificar si el script se está ejecutando como programa principal
 if __name__ == '__main__':
