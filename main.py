@@ -64,17 +64,30 @@ def main():
 
     # Iterar sobre los nombres de los atributos 
     for attribute in attributes:
-        # Obtener las reglas que tienen el mismo atributo
+        # Obtener las reglas del atributo
         attribute_rules = rules[rules['Attribute'] == attribute]
         
-        # Sumar los errores e instancias para el mismo atributo
+        # Sumar los errores de las reglas
         errors = attribute_rules['Errors'].sum()
+
+        # Sumar las instancias 
         instances = attribute_rules['Instances'].sum()
         
-        # Guardar el error total del atributo
+        # Guardar los errores y las instancias de cada regla
         total_errors = total_errors._append({'Attribute': attribute, 'Errors': errors, 'Instances': instances}, ignore_index=True)
         
-    print(total_errors)
+    # Calcular la división Errors/Instances, que representa el error total
+    total_errors['Result'] = total_errors['Errors'] / total_errors['Instances']
+
+    # Encontrar el índice de la regla con el menor error total
+    selected_rule_index = total_errors['Result'].idxmin()  # Si es más de una regla, retornar la primera
+
+    # Obtener la regla con el menor error total
+    selected_rule = total_errors.loc[selected_rule_index]
+
+    # print(total_errors)
+    # print(selected_rule['Attribute'])
+
 
 # Ejecutar el main
 if __name__ == '__main__':
