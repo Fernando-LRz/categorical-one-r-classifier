@@ -33,6 +33,9 @@ def main():
     oneR.fit()
     oneR.evaluate(test_dataset)
 
+    frequency_tables = oneR.getFrequencyTables()
+    rules = oneR.getRules()
+    total_errors = oneR.getTotalErrors()
     model = oneR.getModel()
     evaluation = oneR.getModelEvaluationResult()
 
@@ -48,7 +51,21 @@ def main():
     print(test_dataset)
     print()
 
-    # oneR.showAdditionalInformation()
+    print('Tablas de frecuencia')
+    print()
+    for key, value in frequency_tables.items():
+        print(value)
+        print()
+
+    print('Reglas')
+    print()
+    print(rules)
+    print()
+
+    print('Errores totales')
+    print()
+    print(total_errors)
+    print()
 
     print('Modelo')
     print()

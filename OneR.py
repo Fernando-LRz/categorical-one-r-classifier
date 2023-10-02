@@ -154,20 +154,3 @@ class OneR:
 
     def getModelEvaluationResult(self) -> pandas.DataFrame :
         return self.result
-    
-    def showAdditionalInformation(self) -> None:
-        print('Tablas de frecuencia')
-        print()
-        for key, value in self.frequency_tables.items():
-            print(value)
-            print()
-
-        print('Reglas')
-        print()
-        print(self.rules)
-        print()
-
-        print('Errores totales')
-        print()
-        print(self.total_errors)
-        print()
