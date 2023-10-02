@@ -27,14 +27,14 @@ def main():
     # Definir el set de datos de prueba
     test_dataset = dataset.drop(training_dataset.index)
 
-    # Crear una instancia de la clase OneR_Prediction
-    oneR_Prediction = OneR(training_dataset, attributes, class_name)
+    # Crear una instancia de la clase OneR
+    oneR = OneR(training_dataset, attributes, class_name)
 
-    oneR_Prediction.fit()
-    oneR_Prediction.evaluate(test_dataset)
+    oneR.fit()
+    oneR.evaluate(test_dataset)
 
-    model = oneR_Prediction.getModel()
-    evaluation = oneR_Prediction.getModelEvaluationResult()
+    model = oneR.getModel()
+    evaluation = oneR.getModelEvaluationResult()
 
     print()
 
@@ -48,7 +48,7 @@ def main():
     print(test_dataset)
     print()
 
-    # oneR_Prediction.showAdditionalInformation()
+    # oneR.showAdditionalInformation()
 
     print('Modelo')
     print()
