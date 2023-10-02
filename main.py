@@ -1,8 +1,7 @@
 import pandas
-from fractions import Fraction
 
 def main():
-    # Dataset file
+    # Archivo con el set de datos
     csv = '../golf-dataset-categorical.csv'
 
     # Leer el archivo CSV y almacenar los datos en un DataFrame
@@ -33,6 +32,7 @@ def main():
         # Obtener los valores del atributo
         attribute_values = frecuency_table.index
 
+        # Iterar sobre los nombres de los atributos
         for value in attribute_values:
             # Encontrar la clase más frecuente para el valor del atributo
             most_frequent_class = data[data[attribute] == value][class_name].mode().iloc[0]
@@ -58,35 +58,68 @@ def main():
         # Obtener y asignar la cantidad de instancias que no coinciden con la regla
         errors = len(data[(data[attribute] == value) & (data[class_name] != expected_class)])
         rules.at[index, 'Errors'] = errors
-
+    
     # Crear un DataFrame para almacenar los errores totales
     total_errors = pandas.DataFrame(columns=['Attribute', 'Errors', 'Instances'])
 
     # Iterar sobre los nombres de los atributos 
     for attribute in attributes:
         # Obtener las reglas del atributo
-        attribute_rules = rules[rules['Attribute'] == attribute]
+        attribute_rule = rules[rules['Attribute'] == attribute]
         
         # Sumar los errores de las reglas
-        errors = attribute_rules['Errors'].sum()
+        errors = attribute_rule['Errors'].sum()
 
         # Sumar las instancias 
-        instances = attribute_rules['Instances'].sum()
+        instances = attribute_rule['Instances'].sum()
         
         # Guardar los errores y las instancias de cada regla
         total_errors = total_errors._append({'Attribute': attribute, 'Errors': errors, 'Instances': instances}, ignore_index=True)
-        
+    
     # Calcular la división Errors/Instances, que representa el error total
     total_errors['Result'] = total_errors['Errors'] / total_errors['Instances']
 
-    # Encontrar el índice de la regla con el menor error total
+    # Encontrar el índice del atributo cuya regla es la de menor error total
     selected_rule_index = total_errors['Result'].idxmin()  # Si es más de una regla, retornar la primera
 
-    # Obtener la regla con el menor error total
-    selected_rule = total_errors.loc[selected_rule_index]
+    # Obtener el nombre del atributo cuya regla es la de menor error total
+    selected_rule_name = total_errors.loc[selected_rule_index]['Attribute']
 
-    # print(total_errors)
-    # print(selected_rule['Attribute'])
+    # Obtener la regla
+    selected_rule = rules[rules['Attribute'] == selected_rule_name]
+
+    # Crear una lista para almacenar los resultados
+    result = []
+
+    # Iterar sobre cada instancia en el conjunto de datos
+    for instance_index, instance in data.iterrows():
+        # Obtener de la instancia el valor del atributo que se evalúa en la regla y también su clase
+        instance_attribute_value = instance[selected_rule_name]
+        instance_class = instance[class_name]
+
+        # Crear una bandera para saber si la regla acertó
+        rule_fulfilled = False
+
+        # Obtener la clase esperada según la regla
+        expected_class = (selected_rule[selected_rule['Value'] == instance_attribute_value]['Class']).values[0]
+
+        # Iterar sobre cada condición en la regla seleccionada
+        for condition_index, condition in selected_rule.iterrows():
+            # Obtener de la condicion el valor del atributo y también su clase
+            condition_attribute_value = condition['Value']
+
+            # Evaluar si la regla acierta
+            if instance_attribute_value == condition_attribute_value and instance_class == expected_class:            
+                rule_fulfilled = True
+                break
+ 
+        result.append([expected_class, rule_fulfilled])
+    
+    # Convertir la lista de resultados en un DataFrame
+    result_df = pandas.DataFrame(result, columns=['Clase Esperada', 'Acierto'])
+
+    # Combinar el dataframe de los datos y el de resultados
+    final_df = pandas.concat([data, result_df], axis=1)
 
 
 # Ejecutar el main
