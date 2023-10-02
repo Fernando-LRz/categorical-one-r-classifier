@@ -1,5 +1,5 @@
 import pandas
-from OneR_Prediction import OneR_Prediction
+from OneR import OneR
 
 def main():
     # Archivo con el set de datos
@@ -28,44 +28,37 @@ def main():
     test_dataset = dataset.drop(training_dataset.index)
 
     # Crear una instancia de la clase OneR_Prediction
-    oneR_Prediction = OneR_Prediction(training_dataset, test_dataset, attributes, class_name)
+    oneR_Prediction = OneR(training_dataset, attributes, class_name)
 
-    # Calcular las tablas de frecuencia
-    oneR_Prediction.calculateFrequencyTables()
+    oneR_Prediction.fit()
+    oneR_Prediction.evaluate(test_dataset)
 
-    # print(oneR_Prediction.rules)
-    # print()
+    model = oneR_Prediction.getModel()
+    evaluation = oneR_Prediction.getModelEvaluationResult()
 
-    # Calcular los errores
-    oneR_Prediction.calculateErrors()
-
-    # print(oneR_Prediction.rules)
-    # print()
-
-    # Calcular el error total de las reglas
-    oneR_Prediction.calculateTotalErrors()
-
-    # print(oneR_Prediction.total_errors)
-    # print()
-
-    # Seleccionar la regla con el menor error total
-    oneR_Prediction.selectTheBestRule()
-
-    # print(oneR_Prediction.selected_rule)
-    # print()
-
-    # Evaluar la regla seleccionada
-    oneR_Prediction.evaluateSelectedRule()
-
-    print(oneR_Prediction.rules)
-    print()
-    print(oneR_Prediction.total_errors)
-    print()
-    print(oneR_Prediction.selected_rule)
-    print()
-    print(oneR_Prediction.result)
     print()
 
+    print('Conjunto de datos de entrenamiento')
+    print()
+    print(training_dataset)
+    print()
+
+    print('Conjunto de datos de prueba')
+    print()
+    print(test_dataset)
+    print()
+
+    # oneR_Prediction.showAdditionalInformation()
+
+    print('Modelo')
+    print()
+    print(model)
+    print()
+    
+    print('Evaluación del modelo')
+    print()
+    print(evaluation)
+    print()
 
 # Ejecutar el main
 if __name__ == '__main__':

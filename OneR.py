@@ -1,11 +1,10 @@
 import pandas
 
-class OneR_Prediction:
+class OneR:
 
-    def __init__(self, training_dataset, test_dataset, attributes, class_name) -> None:       
+    def __init__(self, training_dataset, attributes, class_name) -> None:       
         # Inicializar los atributos
         self.training_dataset = training_dataset
-        self.test_dataset = test_dataset
         self.class_name = class_name
         self.attributes = attributes
 
@@ -28,7 +27,7 @@ class OneR_Prediction:
         # Crear un atributo para almacenar los resultados de la predicción (DataFrame de Pandas)
         self.result = None
 
-    def calculateFrequencyTables(self) -> None:
+    def computeFrequencyTables(self) -> None:
         # Iterar sobre cada atributo y calcular su tabla de frecuencia
         for attribute in self.attributes:
             frecuency_table = pandas.crosstab(self.training_dataset[attribute], self.training_dataset[self.class_name]) # filas, columnas
@@ -79,7 +78,7 @@ class OneR_Prediction:
         # Calcular la división Errors/Instances, que representa el error total
         self.total_errors['Result'] = self.total_errors['Errors'] / self.total_errors['Instances']
 
-    def selectTheBestRule(self) -> None:
+    def selectModel(self) -> None:
         # Encontrar el índice del atributo cuya regla es la de menor error total
         self.selected_rule_index = self.total_errors['Result'].idxmin()  # Si es más de una regla, retornar la primera
 
@@ -90,12 +89,12 @@ class OneR_Prediction:
         self.selected_rule = self.rules[self.rules['Attribute'] == self.selected_rule_name]
 
     
-    def evaluateSelectedRule(self) -> None: 
+    def evaluate(self, test_dataset) -> None: 
         # Crear una lista para almacenar los resultados
         result = []
 
         # Iterar sobre cada instancia en el conjunto de datos de prueba
-        for instance_index, instance in self.test_dataset.iterrows():
+        for instance_index, instance in test_dataset.iterrows():
             # Obtener de la instancia el valor del atributo que se evalúa en la regla y también su clase
             instance_attribute_value = instance[self.selected_rule_name]
             instance_class = instance[self.class_name]
@@ -122,8 +121,53 @@ class OneR_Prediction:
         evaluations = pandas.DataFrame(result, columns=['Clase Esperada', 'Acierto'])
 
         # Crear una copia del set de datos de prueba 
-        self.result = self.test_dataset.copy()
+        self.result = test_dataset.copy()
 
         # Iterar sobre las columnas de evaluations y agregarlas como nuevas columnas en result
         for col in evaluations.columns:
             self.result[col] = evaluations[col].values
+        
+    def fit(self) -> None:
+        # Calcular las tablas de frecuencia
+        self.computeFrequencyTables()
+
+        # Calcular los errores
+        self.calculateErrors()
+
+        # Calcular el error total de las reglas
+        self.calculateTotalErrors()
+
+        # Seleccionar la regla con el menor error total
+        self.selectModel()
+    
+    def getFrequencyTables(self) -> dict:
+        return self.frequency_tables
+    
+    def getRules(self) -> pandas.DataFrame:
+        return self.rules
+
+    def getTotalErrors(self) -> pandas.DataFrame:
+        return self.total_errors
+    
+    def getModel(self) -> pandas.DataFrame:
+        return self.selected_rule
+
+    def getModelEvaluationResult(self) -> pandas.DataFrame :
+        return self.result
+    
+    def showAdditionalInformation(self) -> None:
+        print('Tablas de frecuencia')
+        print()
+        for key, value in self.frequency_tables.items():
+            print(value)
+            print()
+
+        print('Reglas')
+        print()
+        print(self.rules)
+        print()
+
+        print('Errores totales')
+        print()
+        print(self.total_errors)
+        print()
