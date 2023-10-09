@@ -11,12 +11,6 @@ def main():
     # Eliminar los espacios en blanco del DataFrame
     dataset = dataset.map(lambda x: x.strip() if isinstance(x, str) else x)
 
-    # Obtener una lista con los nombres de los atributos (omitir la última columna)
-    attributes = dataset.columns[:-1]
-
-    # Obtener el nombre de la clase (última columna)
-    class_name = dataset.columns[-1]
-
     # Definir el tamaño del set de datos de entrenamiento
     training_percentage = 0.7
     number_of_instances = round(len(dataset) * training_percentage)
@@ -28,7 +22,7 @@ def main():
     test_dataset = dataset.drop(training_dataset.index)
 
     # Crear una instancia de la clase OneR
-    oneR = OneR(training_dataset, attributes, class_name)
+    oneR = OneR(training_dataset)
 
     oneR.fit()
     oneR.evaluate(test_dataset)
